@@ -19,7 +19,8 @@
   "scripts": {
     "build": "rimraf ./dist && tsc",
     "start": "npm run build && node dist/index.js",
-    "test": "npm run build && node dist/test.js",
+    "testloc": "npm run build && node dist/test.js",
+    "test": "echo \"No test specified\"",
     "prepublish": "tsc"
   },
   "repository": {
