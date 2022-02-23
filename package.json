@@ -1,0 +1,35 @@
+{
+  "name": "adams-thegraph-proxy",
+  "version": "1.0.0",
+  "description": "A service that listens for updates on TheGraph",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "dependencies": {
+    "dotenv": "^16.0.0",
+    "graphql": "^16.3.0",
+    "graphql-request": "^4.0.0",
+    "pg": "^8.7.3"
+  },
+  "devDependencies": {
+    "@types/node": "^17.0.19",
+    "rimraf": "^3.0.2",
+    "typescript": "^4.5.5",
+    "axios": "^0.26.0"
+  },
+  "scripts": {
+    "build": "rimraf ./dist && tsc",
+    "start": "npm run build && node dist/index.js",
+    "test": "npm run build && node dist/test.js",
+    "prepublish": "tsc"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/AdamPetroff/adams-thegraph-proxy.git"
+  },
+  "author": "ado011235",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/AdamPetroff/adams-thegraph-proxy/issues"
+  },
+  "homepage": "https://github.com/AdamPetroff/adams-thegraph-proxy#readme"
+}
