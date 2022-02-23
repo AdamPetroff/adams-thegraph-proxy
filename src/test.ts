@@ -40,5 +40,3 @@ class Listener extends AbstractListener<EventData> {
 
 console.log("----")
 new Listener("", "https://api.thegraph.com/subgraphs/name/adampetroff/cryptomeda-sale-dev", "test-sale", "test", { host: process.env.DBHOST || "", port: Number(process.env.DBPORT), user: process.env.DBUSER || "", password: process.env.DBPASSWORD || "", database: process.env.DBNAME || "" })
-
-module.exports = Listener;

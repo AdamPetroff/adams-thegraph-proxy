@@ -1,5 +1,6 @@
-import BaseListener from "./listener"
+import BaseListener, { BaseEntity } from "./listener"
 
 export {
   BaseListener,
+  BaseEntity
 }
