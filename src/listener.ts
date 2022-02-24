@@ -135,7 +135,7 @@ export default abstract class AbstractListener<T> {
   }
 
   log(...args: any[]) {
-    console.log(`${this.instanceName}: `, ...args)
+    console.log(`${this.appId}: `, ...args)
   }
 
   async execQuery<T>(query: string): Promise<T> {  
