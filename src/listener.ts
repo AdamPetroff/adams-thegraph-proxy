@@ -75,8 +75,8 @@ export default abstract class AbstractListener<T> {
   }
 
   async fetchFailedEvents(triesGTE: number, triesLTE: number, lastTryAtLTE: number) {
-    const result = await this.db.query<{id: number, tries: number, be_payload: BaseEntity & T}>(`
-        SELECT id, tries, be_payload
+    const result = await this.db.query<{id: number, tries: number, event_data: BaseEntity & T}>(`
+        SELECT id, tries, event_data
         FROM events
         WHERE success = false AND app_id = $1 AND tries <= $2 AND tries >= $3 AND last_try_at <= $4`, 
         [this.appId, triesLTE, triesGTE, new Date(lastTryAtLTE)]
@@ -90,7 +90,7 @@ export default abstract class AbstractListener<T> {
 
     for(let i = 0; i < failedEventsSecondTry.length; i++) {
       const item = failedEventsSecondTry[i]
-      await this._retryToHandleEvent(item.be_payload, { tries: item.tries, id: item.id })
+      await this._retryToHandleEvent(item.event_data, { tries: item.tries, id: item.id })
     }
 
     // 3. try after 30 min
@@ -98,7 +98,7 @@ export default abstract class AbstractListener<T> {
 
     for(let i = 0; i < failedEventsThirdTry.length; i++) {
       const item = failedEventsThirdTry[i]
-      await this._retryToHandleEvent(item.be_payload, { tries: item.tries, id: item.id })
+      await this._retryToHandleEvent(item.event_data, { tries: item.tries, id: item.id })
     }
 
     // 4. to 10. try after 1 day
@@ -106,7 +106,7 @@ export default abstract class AbstractListener<T> {
 
     for(let i = 0; i < failedEventsFourthPlusTry.length; i++) {
       const item = failedEventsFourthPlusTry[i]
-      await this._retryToHandleEvent(item.be_payload, { tries: item.tries, id: item.id })
+      await this._retryToHandleEvent(item.event_data, { tries: item.tries, id: item.id })
     }
   }
 
@@ -203,7 +203,7 @@ export default abstract class AbstractListener<T> {
     }
 
     await this.db.query(
-      `INSERT INTO events(event_id, block_number, transaction_hash, app_id, success, be_payload) VALUES ($1, $2, $3, $4, $5, $6)`, 
+      `INSERT INTO events(event_id, block_number, transaction_hash, app_id, success, event_data) VALUES ($1, $2, $3, $4, $5, $6)`,
       [eventData.id, eventData.blockNumber, eventData.transactionHash, this.appId, success, eventData]
     );
   }
