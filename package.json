@@ -1,6 +1,6 @@
 {
   "name": "adams-thegraph-proxy",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "description": "A service that listens for updates on TheGraph",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -21,7 +21,7 @@
     "start": "npm run build && node dist/index.js",
     "testloc": "npm run build && node dist/test.js",
     "test": "echo \"No test specified\"",
-    "publ": "npm run build && npm publish"
+    "publ": "yarn build && yarn publish"
   },
   "repository": {
     "type": "git",
