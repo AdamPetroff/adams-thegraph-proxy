@@ -168,8 +168,8 @@ export default abstract class AbstractListener<T> {
       await this.handleEvent(eventData)
 
       success = true
-    } catch {
-      this.log("Event handling failed")
+    } catch (e: any) {
+      this.log(`Event handling failed. Message: ${e.message}`)
     }
 
     await this.db.query(
@@ -198,8 +198,8 @@ export default abstract class AbstractListener<T> {
       await this.handleEvent(eventData)
 
       success = true
-    } catch {
-      this.log("Event handling failed")
+    } catch (e: any) {
+      this.log(`Event handling failed. Message: ${e.message}`)
     }
 
     await this.db.query(
