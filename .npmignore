@@ -1,2 +1,5 @@
 node_modules
 .env
+src
+docker-compose.yml
+tsconfig.json
