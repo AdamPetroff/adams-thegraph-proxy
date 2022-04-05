@@ -1,6 +1,6 @@
 {
   "name": "adams-thegraph-proxy",
-  "version": "1.0.8",
+  "version": "1.0.9",
   "description": "A service that listens for updates on TheGraph",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
