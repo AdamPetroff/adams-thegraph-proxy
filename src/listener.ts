@@ -53,6 +53,7 @@ export default abstract class AbstractListener<T> {
       }
     } catch(e) {
       console.error(e)
+      console.log(`----reinitializing ${this.appId} because of an error`)
       this._init()
     }
   }
