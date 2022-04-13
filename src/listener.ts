@@ -32,6 +32,7 @@ export default abstract class AbstractListener<T> {
 
     this.log("initialising")
 
+    this.keepRetryingFailedEvents()
     this._init()
   }
 
@@ -39,8 +40,6 @@ export default abstract class AbstractListener<T> {
   abstract handleEvent(eventData: BaseEntity & T): Promise<void>;
 
   async _init() {
-    this.keepRetryingFailedEvents()
-
     try {
       let cycles = 0
       while(true) {
