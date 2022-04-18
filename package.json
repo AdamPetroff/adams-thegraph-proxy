@@ -5,6 +5,8 @@
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "dependencies": {
+    "@sentry/node": "^6.19.6",
+    "@sentry/tracing": "^6.19.6",
     "dotenv": "^16.0.0",
     "graphql": "^16.3.0",
     "graphql-request": "^4.0.0",

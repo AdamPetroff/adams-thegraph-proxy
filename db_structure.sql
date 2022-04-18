@@ -8,5 +8,5 @@ CREATE TABLE IF NOT EXISTS public.events
     success boolean DEFAULT true NOT NULL,
     tries smallint DEFAULT '1' NOT NULL,
     event_data json NOT NULL,
-    last_try_at timestamp DEFAULT CURRENT_TIMESTAMP NOT NULL,
-);
+    last_try_at timestamp DEFAULT CURRENT_TIMESTAMP NOT NULL
+)

@@ -1,6 +1,6 @@
 import sleep from './functions/sleep'
 import { request } from 'graphql-request'
-
+import * as Sentry from "@sentry/node";
 import { Client } from "pg";
 
 require("dotenv").config();
@@ -16,16 +16,26 @@ export default abstract class AbstractListener<T> {
   graphUrl: string;
   instanceName: string;
   environment: string;
-  appId: string
-  db: Client
+  appId: string;
+  sentryOn: boolean = false;
+  db: Client;
 
 
-  constructor(apiUrl: string, graphUrl: string, instanceName: string, environment: string, dbConfig: { host: string, port: number, user: string, password: string, database: string }) {
+  constructor({ apiUrl, graphUrl, instanceName, environment, dbConfig, sentryDns }: {apiUrl: string, graphUrl: string, instanceName: string, environment: string, sentryDns?: string, dbConfig: { host: string, port: number, user: string, password: string, database: string }}) {
     this.apiUrl = apiUrl
     this.graphUrl = graphUrl
     this.instanceName = instanceName
     this.environment = environment
     this.appId = `${instanceName} ${environment}`
+
+    if(sentryDns) {
+      this.sentryOn = true
+      Sentry.init({
+        dsn: sentryDns,
+        environment: environment,
+        maxBreadcrumbs: 3
+      });
+    }
 
     this.db = new Client(dbConfig)
     this.db.connect()
@@ -45,13 +55,18 @@ export default abstract class AbstractListener<T> {
       while(true) {
         await this._getAndHandleEventsFromLatestBlock()
         await sleep(10_000)
-        if(cycles % 30 === 0) {
+        if(cycles % 360 === 0) {
           this.log("still checking for new events")
         }
         cycles += 1
       }
     } catch(e) {
       console.error(e)
+
+      if(this.sentryOn) {
+        Sentry.captureException(e, { tags: { listenerError: true } })
+      }
+
       console.log(`----reinitializing ${this.appId} because of an error`)
       this._init()
     }
@@ -63,13 +78,18 @@ export default abstract class AbstractListener<T> {
       while(true) {
         await this.retryFailedEvents()
         await sleep(75_000)
-        if(cycles % 30 === 0) {
+        if(cycles % 288 === 0) {
           this.log("still retrying failed events")
         }
         cycles += 1
       }
     } catch(e) {
       console.error(e)
+
+      if(this.sentryOn) {
+        Sentry.captureException(e, { tags: { listenerError: true } })
+      }
+
       this.keepRetryingFailedEvents()
     }
   }
@@ -122,6 +142,10 @@ export default abstract class AbstractListener<T> {
         await this._handleNewEvent(results[i])
       } catch(e: any) {
         this.log(e.message)
+
+        if(this.sentryOn) {
+          Sentry.captureException(e, { tags: { listenerError: true } })
+        }
       }
     }
     this.log("batch queried and handled")
@@ -170,6 +194,24 @@ export default abstract class AbstractListener<T> {
       success = true
     } catch (e: any) {
       this.log(`Event handling failed. Message: ${e.message}`)
+
+      if(this.sentryOn) {
+        Sentry.captureMessage(
+          e.message,
+          {
+            level: Sentry.Severity.Error,
+            tags: {
+              listener: this.instanceName,
+              serverError: true,
+              nOfTriedTimes: thisTry
+            },
+            extra: {
+              eventData,
+              listener: this.instanceName
+            }
+          }
+        )
+      }
     }
 
     await this.db.query(
@@ -200,6 +242,24 @@ export default abstract class AbstractListener<T> {
       success = true
     } catch (e: any) {
       this.log(`Event handling failed. Message: ${e.message}`)
+
+      if(this.sentryOn) {
+        Sentry.captureMessage(
+          e.message,
+          {
+            level: Sentry.Severity.Error,
+            tags: {
+              listener: this.instanceName,
+              serverError: true,
+              nOfTriedTimes: 1
+            },
+            extra: {
+              eventData,
+              listener: this.instanceName
+            }
+          }
+        )
+      }
     }
 
     await this.db.query(
