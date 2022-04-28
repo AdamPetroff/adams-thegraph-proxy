@@ -55,7 +55,7 @@ export default abstract class AbstractListener<T> {
       while(true) {
         await this._getAndHandleEventsFromLatestBlock()
         await sleep(10_000)
-        if(cycles % 360 === 0) {
+        if(cycles % 2160 === 0) {
           this.log("still checking for new events")
         }
         cycles += 1
@@ -78,7 +78,7 @@ export default abstract class AbstractListener<T> {
       while(true) {
         await this.retryFailedEvents()
         await sleep(75_000)
-        if(cycles % 288 === 0) {
+        if(cycles % 500 === 0) {
           this.log("still retrying failed events")
         }
         cycles += 1
@@ -191,9 +191,11 @@ export default abstract class AbstractListener<T> {
     try {
       await this.handleEvent(eventData)
 
+      this.log(`Previously failed event handled; Hash: ${eventData.transactionHash};`)
+
       success = true
     } catch (e: any) {
-      this.log(`Event handling failed. Message: ${e.message}`)
+      this.log(`Event handling failed for the ${thisTry}.time ; Hash: ${eventData.transactionHash}; Message: ${e.message}`)
 
       if(this.sentryOn) {
         Sentry.captureMessage(
@@ -239,9 +241,11 @@ export default abstract class AbstractListener<T> {
     try {
       await this.handleEvent(eventData)
 
+      this.log(`Event handled; Hash: ${eventData.transactionHash};`)
+
       success = true
     } catch (e: any) {
-      this.log(`Event handling failed. Message: ${e.message}`)
+      this.log(`Event handling failed; Hash: ${eventData.transactionHash}; Message: ${e.message}`)
 
       if(this.sentryOn) {
         Sentry.captureMessage(
