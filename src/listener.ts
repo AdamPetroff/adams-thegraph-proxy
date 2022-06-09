@@ -195,7 +195,8 @@ export default abstract class AbstractListener<T> {
 
       success = true
     } catch (e: any) {
-      this.log(`Event handling failed for the ${thisTry}.time ; Hash: ${eventData.transactionHash}; Message: ${e.message}`)
+      const message = JSON.stringify(e?.response?.data || e.message)
+      this.log(`Event handling failed for the ${thisTry}.time ; Hash: ${eventData.transactionHash}; Message: ${message}`)
 
       if(this.sentryOn) {
         Sentry.captureMessage(
